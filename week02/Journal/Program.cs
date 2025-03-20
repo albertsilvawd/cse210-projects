@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
 class Program
 {
@@ -10,13 +11,24 @@ class Program
         Journal journal = new Journal();
         bool running = true;
 
+        // Schedule daily reminder (this is just a simulation, for a real reminder we would need a background service)
+        DateTime nextReminder = DateTime.Today.AddHours(20); // Remind user at 8 PM every day
+        Console.WriteLine($"Next reminder: {nextReminder}");
+
         while (running)
         {
+            // Check if it's time for a reminder
+            if (DateTime.Now >= nextReminder)
+            {
+                Console.WriteLine("\nReminder: It's time to write your journal entry!");
+                nextReminder = nextReminder.AddDays(1); // Update to the next day's reminder
+            }
+
             Console.WriteLine("\nJournal Program");
             Console.WriteLine("1. Write a new entry");
             Console.WriteLine("2. Display journal entries");
-            Console.WriteLine("3. Save journal to file");
-            Console.WriteLine("4. Load journal from file");
+            Console.WriteLine("3. Save journal to file (CSV/JSON)");
+            Console.WriteLine("4. Load journal from file (CSV/JSON)");
             Console.WriteLine("5. Exit");
             Console.Write("Choose an option: ");
             
@@ -108,24 +120,63 @@ class Journal
 
     public void SaveToFile()
     {
-        Console.Write("Enter filename to save: ");
+        Console.Write("Enter filename to save (include .csv or .json extension): ");
         string filename = Console.ReadLine();
 
+        if (filename.EndsWith(".csv"))
+        {
+            SaveToCsv(filename);
+        }
+        else if (filename.EndsWith(".json"))
+        {
+            SaveToJson(filename);
+        }
+        else
+        {
+            Console.WriteLine("Invalid file format. Please choose either .csv or .json.");
+        }
+    }
+
+    private void SaveToCsv(string filename)
+    {
         using (StreamWriter writer = new StreamWriter(filename))
         {
             foreach (Entry entry in entries)
             {
-                writer.WriteLine($"{entry.Date}|{entry.Prompt}|{entry.Response}");
+                writer.WriteLine($"{entry.Date},{entry.Prompt},{entry.Response}");
             }
         }
-        Console.WriteLine("Journal saved.");
+        Console.WriteLine("Journal saved as CSV.");
+    }
+
+    private void SaveToJson(string filename)
+    {
+        string json = JsonConvert.SerializeObject(entries, Formatting.Indented);
+        File.WriteAllText(filename, json);
+        Console.WriteLine("Journal saved as JSON.");
     }
 
     public void LoadFromFile()
     {
-        Console.Write("Enter filename to load: ");
+        Console.Write("Enter filename to load (include .csv or .json extension): ");
         string filename = Console.ReadLine();
 
+        if (filename.EndsWith(".csv"))
+        {
+            LoadFromCsv(filename);
+        }
+        else if (filename.EndsWith(".json"))
+        {
+            LoadFromJson(filename);
+        }
+        else
+        {
+            Console.WriteLine("Invalid file format. Please choose either .csv or .json.");
+        }
+    }
+
+    private void LoadFromCsv(string filename)
+    {
         if (!File.Exists(filename))
         {
             Console.WriteLine("File not found.");
@@ -137,12 +188,25 @@ class Journal
 
         foreach (string line in lines)
         {
-            string[] parts = line.Split('|');
+            string[] parts = line.Split(',');
             if (parts.Length == 3)
             {
                 entries.Add(new Entry(parts[1], parts[2]) { Date = parts[0] });
             }
         }
-        Console.WriteLine("Journal loaded.");
+        Console.WriteLine("Journal loaded from CSV.");
+    }
+
+    private void LoadFromJson(string filename)
+    {
+        if (!File.Exists(filename))
+        {
+            Console.WriteLine("File not found.");
+            return;
+        }
+
+        string json = File.ReadAllText(filename);
+        entries = JsonConvert.DeserializeObject<List<Entry>>(json);
+        Console.WriteLine("Journal loaded from JSON.");
     }
 }
