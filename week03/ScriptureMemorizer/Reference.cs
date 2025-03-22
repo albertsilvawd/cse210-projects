@@ -3,10 +3,13 @@
 /// </summary>
 public class Reference
 {
-    private string _book;      // Book name (e.g., "John")
-    private int _chapter;      // Chapter number
-    private int _startVerse;   // Starting verse
-    private int _endVerse;     // Ending verse (0 if single verse)
+    private string _book;
+    private int _chapter;
+    private int _startVerse;
+    private int _endVerse;
+
+    // Parameterless constructor for JSON deserialization
+    public Reference() { }
 
     /// <summary>
     /// Constructor for a single-verse reference (e.g., "John 3:16").
@@ -16,7 +19,7 @@ public class Reference
         _book = book;
         _chapter = chapter;
         _startVerse = verse;
-        _endVerse = 0; // 0 indicates no range
+        _endVerse = 0; // Indicates no range
     }
 
     /// <summary>
@@ -35,9 +38,8 @@ public class Reference
     /// </summary>
     public string GetDisplayText()
     {
-        if (_endVerse == 0)
-            return $"{_book} {_chapter}:{_startVerse}";
-        else
-            return $"{_book} {_chapter}:{_startVerse}-{_endVerse}";
+        return _endVerse == 0 
+            ? $"{_book} {_chapter}:{_startVerse}" 
+            : $"{_book} {_chapter}:{_startVerse}-{_endVerse}";
     }
 }

@@ -1,24 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Manages a scripture's text and reference, including word-hiding logic.
 /// </summary>
 public class Scripture
 {
-    private Reference _reference; // Scripture reference
-    private List<Word> _words;    // List of Word objects
+    [JsonPropertyName("Reference")]
+    private Reference _reference;
+
+    [JsonPropertyName("Text")]
+    private string _text;
+
+    private List<Word> _words = new List<Word>(); // Ensure it's initialized
+
+    /// <summary>
+    /// Parameterless constructor for deserialization.
+    /// </summary>
+    public Scripture() { }
 
     /// <summary>
     /// Constructor initializes the scripture with a reference and text.
-    /// Splits the text into individual Word objects.
     /// </summary>
     public Scripture(Reference reference, string text)
     {
-        _reference = reference ?? throw new ArgumentNullException(nameof(reference)); // Prevent null reference
+        _reference = reference ?? throw new ArgumentNullException(nameof(reference));
+        _text = text ?? throw new ArgumentNullException(nameof(text));
+
         _words = new List<Word>();
-        string[] parts = text.Split(' ');
-        foreach (string part in parts)
+        foreach (string part in text.Split(' '))
         {
             _words.Add(new Word(part));
         }
@@ -29,6 +40,8 @@ public class Scripture
     /// </summary>
     public void HideRandomWords(int numberToHide)
     {
+        if (_words == null || _words.Count == 0) return; // Prevents NullReferenceException
+
         Random random = new Random();
         for (int i = 0; i < numberToHide; i++)
         {
@@ -38,11 +51,10 @@ public class Scripture
         }
     }
 
-    /// <summary>
-    /// Returns the formatted scripture text with hidden words as underscores.
-    /// </summary>
     public string GetDisplayText()
     {
+        if (_reference == null) return "Invalid Scripture"; // Prevents errors
+
         string display = _reference.GetDisplayText() + "\n";
         foreach (Word word in _words)
         {
@@ -51,11 +63,10 @@ public class Scripture
         return display.Trim();
     }
 
-    /// <summary>
-    /// Checks if all words in the scripture are hidden.
-    /// </summary>
     public bool IsCompletelyHidden()
     {
+        if (_words == null) return false; // Prevents NullReferenceException
+
         foreach (Word word in _words)
         {
             if (!word.IsHidden())
@@ -64,11 +75,8 @@ public class Scripture
         return true;
     }
 
-    /// <summary>
-    /// Returns the list of Word objects (for review mode).
-    /// </summary>
     public List<Word> GetWords()
     {
-        return _words; // Added to resolve CS1061 error
+        return _words ?? new List<Word>(); // Prevents NullReferenceException
     }
 }
