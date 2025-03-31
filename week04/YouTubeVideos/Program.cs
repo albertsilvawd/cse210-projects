@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-
 class Program
 {
     static void Main(string[] args)
     {
-        // Create 3 videos with new titles
+        // Create 3 videos
         Video video1 = new Video("The Wonders of Plants", "John Doe", 600);
         Video video2 = new Video("Understanding Mental Health", "Jane Smith", 500);
         Video video3 = new Video("The Importance of Fasting", "Mike Johnson", 350);
