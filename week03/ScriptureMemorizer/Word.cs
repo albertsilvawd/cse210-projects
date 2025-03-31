@@ -41,5 +41,5 @@ public class Word
     /// <summary>
     /// Returns the original word text (even if hidden).
     /// </summary>
-    public string GetOriginalText() => _text; // Added for review mode
+    public string GetOriginalText() => _text;
 }

@@ -7,18 +7,21 @@ using System.Text.Json.Serialization;
 /// </summary>
 public class Scripture
 {
-    [JsonPropertyName("Reference")]
-    private Reference _reference;
+    [JsonPropertyName("Reference")] // Maps to JSON "Reference" object
+    private Reference _reference = new Reference(); // Initialize to avoid null
 
-    [JsonPropertyName("Text")]
+    [JsonPropertyName("Text")] // Maps to JSON "Text" field
     private string _text;
 
-    private List<Word> _words = new List<Word>(); // Ensure it's initialized
+    private List<Word> _words = new List<Word>();
 
     /// <summary>
     /// Parameterless constructor for deserialization.
     /// </summary>
-    public Scripture() { }
+    public Scripture()
+    {
+        _words = new List<Word>(); // Initialize to avoid null
+    }
 
     /// <summary>
     /// Constructor initializes the scripture with a reference and text.
@@ -28,10 +31,26 @@ public class Scripture
         _reference = reference ?? throw new ArgumentNullException(nameof(reference));
         _text = text ?? throw new ArgumentNullException(nameof(text));
 
-        _words = new List<Word>();
-        foreach (string part in text.Split(' '))
+        InitializeWords(); // Initialize words during construction
+    }
+
+    /// <summary>
+    /// Initializes the list of words after deserialization.
+    /// Ensures words are split into Word objects based on _text.
+    /// </summary>
+    public void InitializeWords()
+    {
+        if (!string.IsNullOrEmpty(_text))
         {
-            _words.Add(new Word(part));
+            _words = new List<Word>();
+            foreach (string part in _text.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            {
+                _words.Add(new Word(part));
+            }
+        }
+        else
+        {
+            Console.WriteLine("Warning: Scripture text is null or empty."); // Added for debugging
         }
     }
 
@@ -40,7 +59,7 @@ public class Scripture
     /// </summary>
     public void HideRandomWords(int numberToHide)
     {
-        if (_words == null || _words.Count == 0) return; // Prevents NullReferenceException
+        if (_words == null || _words.Count == 0) return;
 
         Random random = new Random();
         for (int i = 0; i < numberToHide; i++)
@@ -51,9 +70,15 @@ public class Scripture
         }
     }
 
+    /// <summary>
+    /// Returns the formatted scripture text with hidden words as underscores.
+    /// </summary>
     public string GetDisplayText()
     {
-        if (_reference == null) return "Invalid Scripture"; // Prevents errors
+        if (_reference == null || _words == null)
+        {
+            return "Invalid Scripture"; // Prevents NullReferenceException
+        }
 
         string display = _reference.GetDisplayText() + "\n";
         foreach (Word word in _words)
@@ -63,9 +88,12 @@ public class Scripture
         return display.Trim();
     }
 
+    /// <summary>
+    /// Checks if all words in the scripture are hidden.
+    /// </summary>
     public bool IsCompletelyHidden()
     {
-        if (_words == null) return false; // Prevents NullReferenceException
+        if (_words == null) return false;
 
         foreach (Word word in _words)
         {
@@ -75,8 +103,11 @@ public class Scripture
         return true;
     }
 
+    /// <summary>
+    /// Returns the list of Word objects (for review mode).
+    /// </summary>
     public List<Word> GetWords()
     {
-        return _words ?? new List<Word>(); // Prevents NullReferenceException
+        return _words ?? new List<Word>();
     }
 }

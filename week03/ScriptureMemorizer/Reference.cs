@@ -1,11 +1,20 @@
+using System.Text.Json.Serialization;
+
 /// <summary>
 /// Represents a scripture reference (e.g., "John 3:16" or "Proverbs 3:5-6").
 /// </summary>
 public class Reference
 {
+    [JsonPropertyName("Book")] // Maps to JSON "Book" field
     private string _book;
+
+    [JsonPropertyName("Chapter")] // Maps to JSON "Chapter" field
     private int _chapter;
+
+    [JsonPropertyName("StartVerse")] // Maps to JSON "StartVerse" field
     private int _startVerse;
+
+    [JsonPropertyName("EndVerse")] // Maps to JSON "EndVerse" field
     private int _endVerse;
 
     // Parameterless constructor for JSON deserialization
@@ -19,7 +28,7 @@ public class Reference
         _book = book;
         _chapter = chapter;
         _startVerse = verse;
-        _endVerse = 0; // Indicates no range
+        _endVerse = 0; // 0 indicates no range
     }
 
     /// <summary>

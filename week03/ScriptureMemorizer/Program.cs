@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Collections.Generic;
 
 /// <summary>
 /// Main program to help users memorize scriptures.
@@ -12,9 +10,10 @@ class Program
         // Load scriptures from JSON file - Exceeds requirement by loading multiple scriptures from an external file
         var scriptures = ScriptureLoader.LoadFromJson("scriptures.json");
 
-        if (scriptures == null || scriptures.Count == 0)
+        // Validate loaded scriptures
+        if (scriptures == null || scriptures.Count == 0 || scriptures[0].GetDisplayText() == "Invalid Scripture")
         {
-            Console.WriteLine("Error: No scriptures found in the JSON file.");
+            Console.WriteLine("Error: No valid scriptures found. Check the JSON file.");
             return;
         }
 
@@ -33,8 +32,16 @@ class Program
             Console.Clear();
             Console.WriteLine(scripture.GetDisplayText());
 
-            // Check if all words are hidden - Indicates user has completed memorization for that scripture
-            if (scripture.IsCompletelyHidden())
+            if (!scripture.IsCompletelyHidden())
+            {
+                Console.WriteLine("\nPress Enter to hide words or type 'quit' to exit.");
+                string input = Console.ReadLine();
+
+                if (input?.ToLower() == "quit") break;
+
+                scripture.HideRandomWords(difficulty);
+            }
+            else
             {
                 Console.WriteLine("\nTest your memory! Type the full scripture:");
                 string userInput = Console.ReadLine();
@@ -43,7 +50,6 @@ class Program
                 if (userInput == originalText)
                 {
                     Console.WriteLine("Correct! Great job!");
-                    // Save the progress to a file - Tracks user progress beyond basic requirements
                     File.AppendAllText("progress.txt", $"Mastered: {scripture.GetDisplayText()}\n");
                 }
                 else
@@ -52,13 +58,6 @@ class Program
                 }
                 break;
             }
-
-            // Option for the user to quit the game
-            Console.WriteLine("\nPress Enter to hide words or type 'quit' to exit.");
-            if (Console.ReadLine()?.ToLower() == "quit") break;
-
-            // Hide a random set of words based on the chosen difficulty - Adds randomness and variability to the game
-            scripture.HideRandomWords(difficulty);
         }
     }
 }
