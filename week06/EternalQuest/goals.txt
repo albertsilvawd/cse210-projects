@@ -1,0 +1,6 @@
+Run a marathon,1000
+Read scriptures daily,100
+Attend the temple,50
+TotalPoints:0
+UserLevel:1
+Achievements:
