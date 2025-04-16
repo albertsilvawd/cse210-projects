@@ -1,32 +1,27 @@
-namespace EternalQuest
+public class SimpleGoal : Goal
 {
-    public class SimpleGoal : Goal
+    public SimpleGoal(string name, string description) : base(name, description)
     {
-        private bool _isCompleted;
-        private int totalPoints;
+    }
 
-        // Constructor accepts totalPoints as reference (ref)
-        public SimpleGoal(string name, int points, ref int totalPoints) : base(name, points)
+    // Display the simple goal
+    public override void DisplayGoal()
+    {
+        string status = IsCompleted ? "Completed" : "Incomplete";
+        Console.WriteLine($"Simple Goal: {Name} - {Description} - Status: {status} - Points: {Points}");
+    }
+
+    // Mark the simple goal as complete and add points
+    public override void MarkAsComplete()
+    {
+        if (!IsCompleted)
         {
-            _isCompleted = false;
+            IsCompleted = true;
+            Points += 10; // Add points when the goal is completed
         }
-
-        // Method to record the event of goal completion
-        public override void RecordEvent()
+        else
         {
-            if (!_isCompleted)
-            {
-                _isCompleted = true;
-                totalPoints += _points;  // Update totalPoints when the goal is completed
-                Console.WriteLine($"Goal '{_name}' completed! You earned {_points} points.");
-            }
-        }
-
-        // Method to display the goal
-        public override void DisplayGoal()
-        {
-            string status = _isCompleted ? "[X]" : "[ ]";
-            Console.WriteLine($"{status} {_name}");
+            Console.WriteLine("This goal is already completed.");
         }
     }
 }

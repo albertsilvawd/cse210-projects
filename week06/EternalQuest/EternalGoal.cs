@@ -1,24 +1,23 @@
-namespace EternalQuest
+public class EternalGoal : Goal
 {
-    public class EternalGoal : Goal
+    public EternalGoal(string name, string description) : base(name, description)
     {
-        private int totalPoints;
+    }
 
-        // Construtor que recebe totalPoints como referência (ref)
-        public EternalGoal(string name, int points, ref int totalPoints) : base(name, points)
-        { }
+    // Display the eternal goal
+    public override void DisplayGoal()
+    {
+        string status = IsCompleted ? "Completed" : "Ongoing";
+        Console.WriteLine($"Eternal Goal: {Name} - {Description} - Status: {status} - Points: {Points}");
+    }
 
-        // Método para registrar a realização da meta eterna
-        public override void RecordEvent()
+    // Points are added every time the user interacts with the goal
+    public override void MarkAsComplete()
+    {
+        // Always gives points without marking as completed
+        if (!IsCompleted)
         {
-            totalPoints += _points;  // Atualiza o totalPoints toda vez que a meta eterna for registrada
-            Console.WriteLine($"Goal '{_name}' recorded. You earned {_points} points.");
-        }
-
-        // Método para exibir a meta eterna
-        public override void DisplayGoal()
-        {
-            Console.WriteLine($"[ ] {_name} (Eternal goal, not completed)");
+            Points += 5;  // Add points every time it's interacted with
         }
     }
 }

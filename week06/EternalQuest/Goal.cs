@@ -1,24 +1,21 @@
 public abstract class Goal
 {
-    protected string _name;
-    protected int _points;
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public int Points { get; set; }
+    public bool IsCompleted { get; set; }
 
-    public Goal(string name, int points)
+    public Goal(string name, string description)
     {
-        _name = name;
-        _points = points;
+        Name = name;
+        Description = description;
+        Points = 0;
+        IsCompleted = false;
     }
 
-    public abstract void RecordEvent(); // Method to record an event
-    public abstract void DisplayGoal(); // Method to display the goal
-
-    public int GetPoints()
-    {
-        return _points;
-    }
-
-    public string GetName()
-    {
-        return _name;
-    }
+    // Abstract method to display the goal
+    public abstract void DisplayGoal();
+    
+    // Abstract method to mark the goal as complete
+    public abstract void MarkAsComplete();
 }
